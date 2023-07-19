@@ -37,15 +37,15 @@ namespace ASE.PodISMConsole
 
                         if (IsValidJson(json))
                         {
-                            var process = JsonSerializer.Deserialize<ModelJson>(json);
+                            var model = JsonSerializer.Deserialize<ModelJson>(json);
 
-                            if (process != null)
+                            if (model != null)
                             {
                                 Console.WriteLine("JSON-файл успешно десериализован.");
 
-                                UpdateChildParents(process.Processes, null);
+                                UpdateChildParents(model.Processes, null);
 
-                                ConvertToCsv(process);
+                                ConvertToCsv(model);
                             }
                             else
                             {
@@ -100,7 +100,7 @@ namespace ASE.PodISMConsole
         {
             foreach (var process in processes)
             {
-                process.OwnerGroupProcess = parent?.Id;
+                process.Up_id = parent?.Id;
 
                 if (process.Chield != null)
                 {
@@ -114,7 +114,7 @@ namespace ASE.PodISMConsole
             var csvContent = new StringBuilder();
 
             var headers = typeof(Process).GetProperties();
-            csvContent.AppendLine(string.Join(";", headers.Select(p => p.Name)));
+            csvContent.AppendLine(string.Join("\t", headers.Select(p => p.Name)));
 
             foreach (var process in modelJson.Processes)
             {
@@ -136,7 +136,7 @@ namespace ASE.PodISMConsole
                 values.Add(value);
             }
         
-            csvContent.AppendLine(string.Join(";", values));
+            csvContent.AppendLine(string.Join("\t", values));
 
             if (process.Chield != null)
             {
