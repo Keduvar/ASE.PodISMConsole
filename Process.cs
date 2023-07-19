@@ -4,41 +4,38 @@ namespace ASE.PodISMConsole
 {
     public class Process
     {
-        [JsonPropertyName("id")]
+        [JsonPropertyName("UID")]
         public string Id { get; set; }
 
-        [JsonPropertyName("up_id")]
+        [JsonPropertyName("UpUID")]
         public string Up_id { get; set; }
 
-        [JsonPropertyName("title")]
+        [JsonPropertyName("Title")]
         public string Title { get; set; }
 
-        [JsonPropertyName("parentProcess")]
+        [JsonPropertyName("EmpParentProcess")]
         public string OwnerGroupProcess { get; set; }
 
-        [JsonPropertyName("devBy")]
+        [JsonPropertyName("EmpDevBy")]
         public string Methodologist { get; set; }
 
-        [JsonPropertyName("generalInfoName")]
+        [JsonPropertyName("GeneralInfoName")]
         public string GeneralInfoName { get; set; }
 
-        [JsonPropertyName("distributionArea")]
+        [JsonPropertyName("DistributionArea")]
         public string DistributionArea { get; set; }
 
-        [JsonPropertyName("justificationOrder")]
+        [JsonPropertyName("JustificationOrder")]
         public string JustificationOrder { get; set; }
 
-        [JsonPropertyName("processGroupMetrics")]
-        public string ProcessGroupMetrics { get; set; }
-
-        [JsonPropertyName("linkProcessMap")]
+        [JsonPropertyName("LinkProcessMap")]
         public string LinkProcessMap { get; set; }
 
-        [JsonPropertyName("link")]
+        [JsonPropertyName("Link")]
         public string Link { get; set; }
 
-        [JsonPropertyName("Chield")]
-        public List<Process> Chield { get; set; } = new List<Process>();
+        [JsonPropertyName("Chields")]
+        public List<Process> Chields { get; set; } = new List<Process>();
     }
 
     public class ModelJson

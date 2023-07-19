@@ -102,9 +102,9 @@ namespace ASE.PodISMConsole
             {
                 process.Up_id = parent?.Id;
 
-                if (process.Chield != null)
+                if (process.Chields != null)
                 {
-                    UpdateChildParents(process.Chield, process);
+                    UpdateChildParents(process.Chields, process);
                 }
             }
         }
@@ -138,9 +138,9 @@ namespace ASE.PodISMConsole
         
             csvContent.AppendLine(string.Join("\t", values));
 
-            if (process.Chield != null)
+            if (process.Chields != null)
             {
-                foreach (var child in process.Chield)
+                foreach (var child in process.Chields)
                 {
                     ConvertProcessToCsv(child, csvContent);
                 }
