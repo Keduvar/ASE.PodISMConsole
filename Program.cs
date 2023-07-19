@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using ASE.PodISMConsole;
 
 namespace ASE.PodISMConsole
 {
@@ -17,32 +13,49 @@ namespace ASE.PodISMConsole
         {
             try
             {
+                DirectoryInfo dirInfo = new(PathData);
+
+                if(!dirInfo.Exists)
+                {
+                    dirInfo.Create();
+                }
+
+
                 if (File.Exists(JsonFilePath))
                 {
                     Console.WriteLine("Найден JSON-файл");
 
-                    var json = File.ReadAllText(JsonFilePath);
-
-                    if (IsValidJson(json))
+                    if(File.Exists(CsvFilePath))
                     {
-                        var process = JsonSerializer.Deserialize<Process>(json);
-
-                        if (process != null)
-                        {
-                            Console.WriteLine("JSON-файл успешно десериализован.");
-
-                            UpdateChildParents(process.Chield, null);
-
-                            // Продолжение кода для дальнейшей обработки данных
-                        }
-                        else
-                        {
-                            Console.WriteLine("Не удалось десериализовать JSON-файл.");
-                        }
+                        Console.WriteLine("Файл CSV уже существует");
                     }
                     else
                     {
-                        Console.WriteLine("JSON-файл имеет некорректный формат.");
+                        Console.WriteLine("Путь верный");
+
+                        var json = File.ReadAllText(JsonFilePath);
+
+                        if (IsValidJson(json))
+                        {
+                            var process = JsonSerializer.Deserialize<ModelJson>(json);
+
+                            if (process != null)
+                            {
+                                Console.WriteLine("JSON-файл успешно десериализован.");
+
+                                UpdateChildParents(process.Processes, null);
+
+                                ConvertToCsv(process);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Не удалось десериализовать JSON-файл.");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("JSON-файл имеет некорректный формат.");
+                        }
                     }
                 }
                 else
@@ -92,6 +105,44 @@ namespace ASE.PodISMConsole
                 if (process.Chield != null)
                 {
                     UpdateChildParents(process.Chield, process);
+                }
+            }
+        }
+
+        static void ConvertToCsv(ModelJson modelJson)
+        {
+            var csvContent = new StringBuilder();
+
+            var headers = typeof(Process).GetProperties();
+            csvContent.AppendLine(string.Join(";", headers.Select(p => p.Name)));
+
+            foreach (var process in modelJson.Processes)
+            {
+                ConvertProcessToCsv(process, csvContent);
+            }
+
+            File.WriteAllText(CsvFilePath, csvContent.ToString(), Encoding.UTF8);
+            Console.WriteLine("Конвертация JSON в CSV завершена");
+        }
+
+        private static void ConvertProcessToCsv(Process process, StringBuilder csvContent)
+        {
+            var properties = typeof(Process).GetProperties();
+            var values = new List<string>();
+            
+            foreach (var property in properties)
+            {
+                var value = property.GetValue(process)?.ToString() ?? "";
+                values.Add(value);
+            }
+        
+            csvContent.AppendLine(string.Join(";", values));
+
+            if (process.Chield != null)
+            {
+                foreach (var child in process.Chield)
+                {
+                    ConvertProcessToCsv(child, csvContent);
                 }
             }
         }

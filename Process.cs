@@ -5,39 +5,45 @@ namespace ASE.PodISMConsole
     public class Process
     {
         [JsonPropertyName("id")]
-        public string Id { get; set; } // Идентификатор процесса
+        public string Id { get; set; }
 
         [JsonPropertyName("up_id")]
-        public string Up_id { get; set; } // Идентификатор родительского процесса
+        public string Up_id { get; set; }
 
         [JsonPropertyName("title")]
-        public string Title { get; set; } // Заголовок процесса
+        public string Title { get; set; }
 
         [JsonPropertyName("parentProcess")]
-        public string OwnerGroupProcess { get; set; } // Владелец группы процессов
+        public string OwnerGroupProcess { get; set; }
 
         [JsonPropertyName("devBy")]
-        public string Methodologist { get; set; } // Методолог, отвечающий за процесс
+        public string Methodologist { get; set; }
 
         [JsonPropertyName("generalInfoName")]
-        public string GeneralInfoName { get; set; } // Общая информация о процессе
+        public string GeneralInfoName { get; set; }
 
         [JsonPropertyName("distributionArea")]
-        public string DistributionArea { get; set; } // Область распространения процесса
+        public string DistributionArea { get; set; }
 
         [JsonPropertyName("justificationOrder")]
-        public string JustificationOrder { get; set; } // Порядок обоснования процесса
+        public string JustificationOrder { get; set; }
 
         [JsonPropertyName("processGroupMetrics")]
-        public string ProcessGroupMetrics { get; set; } // Метрики группы процессов
+        public string ProcessGroupMetrics { get; set; }
 
         [JsonPropertyName("linkProcessMap")]
-        public string LinkProcessMap { get; set; } // Ссылка на карту процесса
+        public string LinkProcessMap { get; set; }
 
         [JsonPropertyName("link")]
-        public string Link { get; set; } // Ссылка на процесс
+        public string Link { get; set; }
 
         [JsonPropertyName("Chield")]
-        public List<Process> Chield { get; set; } = new List<Process>(); // Дочерние процессы
+        public List<Process> Chield { get; set; } = new List<Process>();
+    }
+
+    public class ModelJson
+    {
+        [JsonPropertyName("processes")]
+        public List<Process> Processes { get; set; } = new List<Process>();
     }
 }
