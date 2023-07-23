@@ -13,9 +13,6 @@ namespace ASE.PodISMConsole
         [JsonPropertyName("Title")]
         public string Title { get; set; }
 
-        [JsonPropertyName("Link")]
-        public string Link { get; set; }
-
         [JsonPropertyName("EmpParentProcess")]
         public string EmpParentProcess { get; set; }
 
@@ -33,6 +30,9 @@ namespace ASE.PodISMConsole
 
         [JsonPropertyName("LinkProcessMap")]
         public string LinkProcessMap { get; set; }
+
+        [JsonPropertyName("Link")]
+        public string Link { get; set; }
 
         [JsonPropertyName("Chields")]
         public List<Process> Chields { get; set; }
