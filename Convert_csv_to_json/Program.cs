@@ -8,7 +8,7 @@ namespace ASE.PodISMConsole
     {
         public const string PathData = @".\data";
         public const string JsonFilePath = @".\data\db.json";
-        public const string CsvFilePath = @".\data\pm.content.ver37-main.csv";
+        public const string CsvFilePathProcess = @".\data\pm.content.ver37-main.csv";
         
         static void Main()
         {
@@ -21,7 +21,7 @@ namespace ASE.PodISMConsole
                     dirInfo.Create();
                 }
 
-                if (File.Exists(CsvFilePath))
+                if (File.Exists(CsvFilePathProcess)) //
                 {
                     Console.WriteLine("Найден CSV-файл");
 
@@ -33,11 +33,11 @@ namespace ASE.PodISMConsole
                     {
                         Console.WriteLine("Путь верный");
 
-                        var csv = File.ReadAllText(CsvFilePath, Encoding.UTF8);
+                        var csvProcess = File.ReadAllText(CsvFilePathProcess, Encoding.UTF8); //
 
-                        if (IsValidCsv(csv))
+                        if (IsValidCsv(csvProcess))
                         {
-                            var processes = ReadEmployeesFromCsv(csv);
+                            var processes = ReadEmployeesFromCsv(csvProcess); //
 
                             if (processes != null)
                             {
@@ -131,7 +131,7 @@ namespace ASE.PodISMConsole
                         Chields = new List<Process>()
                     };
 
-                    if(values[1] == ""){}
+                    if(values[1] == "") process.UpUID = values[1] = "null";
                     else
                     {    
                         if (values.Length >= 2 && values[1] != null)
