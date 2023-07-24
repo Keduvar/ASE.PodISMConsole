@@ -110,25 +110,69 @@ namespace ASE.PodISMConsole
                         Chields = new List<Process>()
                     };
 
-                    if (values.Length >= 2 && values[1] != null)
-                        process.UpUID = values[1];    
-                    if (values.Length >= 3 && values[2] != null)
-                        process.Title = values[2];
-                    if (values.Length >= 4 && values[3] != null)
-                        process.EmpParentProcess = values[3];
-                    if (values.Length >= 5 && values[4] != null)
-                        process.EmpDevBy = values[4];
-                    if (values.Length >= 6 && values[5] != null)
-                        process.GeneralInfoName = values[5];
-                    if (values.Length >= 7 && values[6] != null)
-                        process.DistributionArea = values[6];
-                    if (values.Length >= 8 && values[7] != null)
-                        process.JustificationOrder = values[7];
-                    if (values.Length >= 9 && values[8] != null)
-                        process.LinkProcessMap = values[8];
-                    if (values.Length >= 10 && values[9] != null)
-                        process.Link = values[9];
+                    if(values[1] == ""){}
+                    else
+                    {    
+                        if (values.Length >= 2 && values[1] != null)
+                            process.UpUID = values[1];
+                    }
 
+                    if(values[2] == ""){}
+                    else
+                    {
+                        if (values.Length >= 3 && values[2] != null)
+                            process.Title = values[2];
+                    }
+
+                    if(values[3] == ""){}
+                    else
+                    {
+                        if (values.Length >= 4 && values[3] != null)
+                            process.EmpParentProcess = values[3];
+                    }
+                    
+                    if(values[4] == ""){}
+                    else
+                    {
+                        if (values.Length >= 5 && values[4] != null)
+                            process.EmpDevBy = values[4];
+                    }
+
+                    if(values[5] == ""){}
+                    else
+                    {
+                        if (values.Length >= 6 && values[5] != null)
+                            process.GeneralInfoName = values[5];
+                    }
+
+                    if(values[6] == ""){}
+                    else
+                    {
+                        if (values.Length >= 7 && values[6] != null)
+                            process.DistributionArea = values[6];
+                    }
+
+                    if(values[7] == ""){}
+                    else
+                    {
+                        if (values.Length >= 8 && values[7] != null)
+                            process.JustificationOrder = values[7];
+                    }
+
+                    if(values[8] == ""){}
+                    else
+                    {
+                        if (values.Length >= 9 && values[8] != null)
+                            process.LinkProcessMap = values[8];
+                    }
+
+                    if(values[9] == ""){}
+                    else
+                    {
+                        if (values.Length >= 10 && values[9] != null)
+                            process.Link = values[9];
+                    }
+                    
                     processes.Add(process);
 
                     processMap[process.UID] = process;
