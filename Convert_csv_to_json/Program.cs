@@ -42,8 +42,13 @@ namespace ASE.PodISMConsole
                             if (processes != null)
                             {
                                 var json = SerializeToJson(processes);
-                                File.WriteAllText(JsonFilePath, json, Encoding.UTF8);
-                                Console.WriteLine("CSV-файл успешно переведен в JSON и сохранен в папку data");
+                                
+                                if(IsValidJson(json))
+                                {
+                                    File.WriteAllText(JsonFilePath, json, Encoding.UTF8);
+                                    Console.WriteLine("CSV-файл успешно переведен в JSON и сохранен в папку data");
+                                }
+
                             }
                             else
                             {
@@ -64,6 +69,22 @@ namespace ASE.PodISMConsole
             catch (Exception ex)
             {
                 Console.WriteLine($"Произошла ошибка: {ex.Message}");
+            }
+        }
+
+
+        static bool IsValidJson(string json)
+        {
+            try
+            {
+                using (JsonDocument.Parse(json))
+                {
+                    return true;
+                }
+            }
+            catch (JsonException)
+            {
+                return false;
             }
         }
         
