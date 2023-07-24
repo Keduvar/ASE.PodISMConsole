@@ -9,6 +9,7 @@ namespace ASE.PodISMConsole
         public const string PathData = @".\data";
         public const string JsonFilePath = @".\data\db.json";
         public const string CsvFilePathProcess = @".\data\pm.content.ver37-main.csv";
+        public const string CsvFilePathEmployee = @".\data\pm.content.ver37-employee.csv";
         
         static void Main()
         {
@@ -21,9 +22,9 @@ namespace ASE.PodISMConsole
                     dirInfo.Create();
                 }
 
-                if (File.Exists(CsvFilePathProcess)) //
+                if (File.Exists(CsvFilePathProcess) && File.Exists(CsvFilePathEmployee))
                 {
-                    Console.WriteLine("Найден CSV-файл");
+                    Console.WriteLine("Найдены CSV-файлы");
 
                     if (File.Exists(JsonFilePath))
                     {
@@ -33,19 +34,23 @@ namespace ASE.PodISMConsole
                     {
                         Console.WriteLine("Путь верный");
 
-                        var csvProcess = File.ReadAllText(CsvFilePathProcess, Encoding.UTF8); //
+                        var csvProcess = File.ReadAllText(CsvFilePathProcess, Encoding.UTF8);
+                        var csvEmployee = File.ReadAllText(CsvFilePathEmployee, Encoding.UTF8);
 
-                        if (IsValidCsv(csvProcess))
+                        if (IsValidCsv(csvProcess) && IsValidCsv(csvEmployee))
                         {
-                            var processes = ReadEmployeesFromCsv(csvProcess); //
+                            var processes = ReadProcessFromCsv(csvProcess); 
+                            var employee = ReadEmployeesFromCsv(csvEmployee);
 
-                            if (processes != null)
+                            if (processes != null && employee != null)
                             {
-                                var json = SerializeToJson(processes);
+                                var jsonProcess = SerializeToJson(processes,employee);
                                 
-                                if(IsValidJson(json))
+                                
+                                if(IsValidJson(jsonProcess))
                                 {
-                                    File.WriteAllText(JsonFilePath, json, Encoding.UTF8);
+                                    File.WriteAllText(JsonFilePath, jsonProcess, Encoding.UTF8);
+
                                     Console.WriteLine("CSV-файл успешно переведен в JSON и сохранен в папку data");
                                 }
 
@@ -102,7 +107,7 @@ namespace ASE.PodISMConsole
         }
 
 
-        static List<Process> ReadEmployeesFromCsv(string csv)
+        static List<Process> ReadProcessFromCsv(string csv)
         {
             List<Process> processes = new();
             Dictionary<string, Process> processMap = new();
@@ -215,7 +220,55 @@ namespace ASE.PodISMConsole
         }
 
 
-        static string SerializeToJson(List<Process> processes)
+        static List<Employee> ReadEmployeesFromCsv(string csv)
+        {
+            List<Employee> employees = new();
+            Dictionary<string, Employee> processMap = new();
+
+            using (var reader = new StringReader(csv))
+            {
+
+                reader.ReadLine();
+
+                int lineNumber = 2;
+                while (reader.Peek() >= 0)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split(';');
+
+                    if (values.Length < 2)
+                    {
+                        Console.WriteLine($"Ошибка: Недостаточно столбцов в строке {lineNumber}. Пропускаем эту строку.");
+                        lineNumber++;
+                        continue;
+                    }
+
+                    Employee employee = new()
+                    {
+                        Id = values[0],
+                        Name = values[1],
+                        Surname = values[2],
+                        Patronymic = values[3],
+                        ServiceNumber = values[4],
+                        Email = values[5],
+                        Position = values[6],
+                        Subdivision = values[7],
+                        Organization = values[8]
+                    };
+ 
+                    employees.Add(employee);
+
+                    processMap[employee.Id] = employee;
+
+                    lineNumber++;
+                } 
+            }
+
+            return employees;
+        }
+
+
+        static string SerializeToJson(List<Process> processes, List<Employee> employee)
         {
             JsonSerializerOptions jsonOptions = new()
             {
@@ -224,7 +277,7 @@ namespace ASE.PodISMConsole
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };
 
-            var jsonObject = new { processes };
+            var jsonObject = new { processes , employee };
             
             return JsonSerializer.Serialize(jsonObject, jsonOptions);
         }
