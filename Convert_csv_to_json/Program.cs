@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -12,7 +9,7 @@ namespace ASE.PodISMConsole
         public const string PathData = @".\data";
         public const string JsonFilePath = @".\data\db.json";
         public const string CsvFilePath = @".\data\pm.content.ver37-main.csv";
-
+        
         static void Main()
         {
             try
@@ -23,7 +20,7 @@ namespace ASE.PodISMConsole
                 {
                     dirInfo.Create();
                 }
-                
+
                 if (File.Exists(CsvFilePath))
                 {
                     Console.WriteLine("Найден CSV-файл");
@@ -36,7 +33,7 @@ namespace ASE.PodISMConsole
                     {
                         Console.WriteLine("Путь верный");
 
-                        var csv = File.ReadAllText(CsvFilePath,Encoding.UTF8);
+                        var csv = File.ReadAllText(CsvFilePath, Encoding.UTF8);
 
                         if (IsValidCsv(csv))
                         {
@@ -47,16 +44,12 @@ namespace ASE.PodISMConsole
                                 var json = SerializeToJson(processes);
                                 File.WriteAllText(JsonFilePath, json, Encoding.UTF8);
                                 Console.WriteLine("CSV-файл успешно переведен в JSON и сохранен в папку data");
-                            
-
                             }
                             else
                             {
                                 Console.WriteLine("Не удалось сериализовать JSON-файл");
                             }
                         }
-
-                        
                     }
                 }
             }
@@ -73,6 +66,7 @@ namespace ASE.PodISMConsole
                 Console.WriteLine($"Произошла ошибка: {ex.Message}");
             }
         }
+        
 
         static bool IsValidCsv(string csv)
         {
@@ -94,7 +88,7 @@ namespace ASE.PodISMConsole
 
             using (var reader = new StringReader(csv))
             {
-                
+
                 reader.ReadLine();
 
                 int lineNumber = 2;
@@ -117,7 +111,7 @@ namespace ASE.PodISMConsole
                     };
 
                     if (values.Length >= 2 && values[1] != null)
-                        process.UpUID = values[1];
+                        process.UpUID = values[1];    
                     if (values.Length >= 3 && values[2] != null)
                         process.Title = values[2];
                     if (values.Length >= 4 && values[3] != null)
@@ -136,7 +130,7 @@ namespace ASE.PodISMConsole
                         process.Link = values[9];
 
                     processes.Add(process);
-                    
+
                     processMap[process.UID] = process;
 
                     lineNumber++;
@@ -151,20 +145,22 @@ namespace ASE.PodISMConsole
                     }
                 }
             }
-
+            
             return processes;
         }
+
 
         static string SerializeToJson(List<Process> processes)
         {
             JsonSerializerOptions jsonOptions = new()
             {
                 WriteIndented = true,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };
 
             var jsonObject = new { processes };
-
+            
             return JsonSerializer.Serialize(jsonObject, jsonOptions);
         }
     }
