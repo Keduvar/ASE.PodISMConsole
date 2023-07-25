@@ -1,7 +1,6 @@
-﻿using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 
-namespace ASE.PodISMConsole
+namespace Convert_json_to_csv
 {
     class Program
     {
@@ -13,19 +12,13 @@ namespace ASE.PodISMConsole
         {
             try
             {
-                DirectoryInfo dirInfo = new(PathData);
+                FileSystemHelper.EnsureDirectoryExists(PathData);
 
-                if(!dirInfo.Exists)
-                {
-                    dirInfo.Create();
-                }
-
-
-                if (File.Exists(JsonFilePath))
+                if (FileSystemHelper.FileExists(JsonFilePath))
                 {
                     Console.WriteLine("Найден JSON-файл");
 
-                    if(File.Exists(CsvFilePath))
+                    if (FileSystemHelper.FileExists(CsvFilePath))
                     {
                         Console.WriteLine("Файл CSV уже существует");
                     }
@@ -33,9 +26,9 @@ namespace ASE.PodISMConsole
                     {
                         Console.WriteLine("Путь верный");
 
-                        var json = File.ReadAllText(JsonFilePath);
+                        var json = FileSystemHelper.ReadAllText(JsonFilePath);
 
-                        if (IsValidJson(json))
+                        if (JsonToCsvConverter.IsValidJson(json))
                         {
                             var model = JsonSerializer.Deserialize<ModelJson>(json);
 
@@ -43,9 +36,9 @@ namespace ASE.PodISMConsole
                             {
                                 Console.WriteLine("JSON-файл успешно десериализован.");
 
-                                UpdateChildParents(model.Processes, null);
+                                JsonToCsvConverter.UpdateChildParents(model.Processes, null);
 
-                                ConvertToCsv(model.Processes);
+                                JsonToCsvConverter.ConvertToCsv(model.Processes, CsvFilePath);
                             }
                             else
                             {
@@ -78,72 +71,6 @@ namespace ASE.PodISMConsole
             catch (Exception ex)
             {
                 Console.WriteLine($"Произошла ошибка: {ex.Message}");
-            }
-        }
-
-        static bool IsValidJson(string json)
-        {
-            try
-            {
-                using (JsonDocument.Parse(json))
-                {
-                    return true;
-                }
-            }
-            catch (JsonException)
-            {
-                return false;
-            }
-        }
-
-        static void UpdateChildParents(List<Process> processes, Process parent)
-        {
-            foreach (var process in processes)
-            {
-                process.Up_id = parent?.Id;
-
-                if (process.Chields != null)
-                {
-                    UpdateChildParents(process.Chields, process);
-                }
-            }
-        }
-
-        static void ConvertToCsv(List<Process> processes)
-        {
-            var csvContent = new StringBuilder();
-
-            var headers = typeof(Process).GetProperties().Where(p => p.Name != "Chields");
-            csvContent.AppendLine(string.Join(";", headers.Select(p => p.Name)));
-
-            foreach (var process in processes)
-            {
-                ConvertProcessToCsv(process, csvContent);
-            }
-
-            File.WriteAllText(CsvFilePath, csvContent.ToString(), Encoding.UTF8);
-            Console.WriteLine("Конвертация JSON в CSV завершена");
-        }
-
-        private static void ConvertProcessToCsv(Process process, StringBuilder csvContent)
-        {
-            var properties = typeof(Process).GetProperties().Where(p => p.Name != "Chields");
-            var values = new List<string>();
-
-            foreach (var property in properties)
-            {
-                var value = property.GetValue(process)?.ToString() ?? "";
-                values.Add(value);
-            }
-
-            csvContent.AppendLine(string.Join(";", values));
-
-            if (process.Chields != null)
-            {
-                foreach (var child in process.Chields)
-                {
-                    ConvertProcessToCsv(child, csvContent);
-                }
             }
         }
     }

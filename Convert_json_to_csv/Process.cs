@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace ASE.PodISMConsole
+namespace Convert_json_to_csv
 {
     public class Process
     {
