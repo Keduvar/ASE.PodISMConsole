@@ -1,13 +1,13 @@
 using System.Text.Json.Serialization;
 
-namespace ASE.PodISMConsole
+namespace Convert_csv_to_json
 {
     public class Employee 
     {
         [JsonPropertyName("Id")]
         public string Id { get; set; }
 
-        [JsonIgnore]
+        [JsonPropertyName("FullName")]
         public string FullName { get; set; }
  
         [JsonPropertyName("Name")]
