@@ -45,7 +45,7 @@ namespace ASE.PodISMConsole
 
                                 UpdateChildParents(model.Processes, null);
 
-                                ConvertToCsv(model);
+                                ConvertToCsv(model.Processes);
                             }
                             else
                             {
@@ -109,14 +109,14 @@ namespace ASE.PodISMConsole
             }
         }
 
-        static void ConvertToCsv(ModelJson modelJson)
+        static void ConvertToCsv(List<Process> processes)
         {
             var csvContent = new StringBuilder();
 
-            var headers = typeof(Process).GetProperties();
-            csvContent.AppendLine(string.Join("\t", headers.Select(p => p.Name)));
+            var headers = typeof(Process).GetProperties().Where(p => p.Name != "Chields");
+            csvContent.AppendLine(string.Join(";", headers.Select(p => p.Name)));
 
-            foreach (var process in modelJson.Processes)
+            foreach (var process in processes)
             {
                 ConvertProcessToCsv(process, csvContent);
             }
@@ -127,16 +127,16 @@ namespace ASE.PodISMConsole
 
         private static void ConvertProcessToCsv(Process process, StringBuilder csvContent)
         {
-            var properties = typeof(Process).GetProperties();
+            var properties = typeof(Process).GetProperties().Where(p => p.Name != "Chields");
             var values = new List<string>();
-            
+
             foreach (var property in properties)
             {
                 var value = property.GetValue(process)?.ToString() ?? "";
                 values.Add(value);
             }
-        
-            csvContent.AppendLine(string.Join("\t", values));
+
+            csvContent.AppendLine(string.Join(";", values));
 
             if (process.Chields != null)
             {
