@@ -10,13 +10,23 @@ namespace Convert_csv_to_json
         {
             try
             {
-                return csv.Contains(';');
+                string[] lines = csv.Split('\n');
+                if (lines.Length > 1)
+                {
+                    string[] headers = lines[0].Split(';');
+                    if (headers.Length > 1)
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
             catch (Exception)
             {
                 return false;
             }
         }
+
 
         public static List<Process> ReadProcessFromCsv(string csv)
         {
