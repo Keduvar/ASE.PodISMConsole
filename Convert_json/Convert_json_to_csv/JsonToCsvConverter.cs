@@ -7,26 +7,33 @@ namespace Convert_json_to_csv
     {
         public static void ConvertJsonToCsv(string jsonFilePath, string csvFilePath)
         {
-            var json = FileSystemHelper.ReadAllText(jsonFilePath);
-
-            if (IsValidJson(json))
+            try
             {
-                var model = JsonSerializer.Deserialize<ModelJson>(json);
+                var json = FileSystemHelper.ReadAllText(jsonFilePath);
 
-                if (model != null)
+                if (IsValidJson(json))
                 {
-                    UpdateChildParents(model.Processes, null);
+                    var model = JsonSerializer.Deserialize<ModelJson>(json);
 
-                    ConvertToCsv(model.Processes, csvFilePath);
+                    if (model != null)
+                    {
+                        UpdateChildParents(model.Processes, null);
+                        ConvertToCsv(model.Processes, csvFilePath);
+                        Console.WriteLine("Конвертация JSON в CSV завершена");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Не удалось десериализовать JSON-файл.");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Не удалось десериализовать JSON-файл.");
+                    Console.WriteLine("JSON-файл имеет некорректный формат.");
                 }
             }
-            else
+            catch (JsonException ex)
             {
-                Console.WriteLine("JSON-файл имеет некорректный формат.");
+                Console.WriteLine($"Ошибка при конвертации JSON в CSV: {ex.Message}");
             }
         }
 
@@ -50,7 +57,6 @@ namespace Convert_json_to_csv
             foreach (var process in processes)
             {
                 process.Up_id = parent?.Id;
-
                 if (process.Chields != null)
                 {
                     UpdateChildParents(process.Chields, process);
@@ -61,7 +67,6 @@ namespace Convert_json_to_csv
         public static void ConvertToCsv(List<Process> processes, string csvFilePath)
         {
             var csvContent = new StringBuilder();
-
             var headers = typeof(Process).GetProperties().Where(p => p.Name != "Chields");
             csvContent.AppendLine(string.Join(";", headers.Select(p => p.Name)));
 
@@ -71,10 +76,9 @@ namespace Convert_json_to_csv
             }
 
             File.WriteAllText(csvFilePath, csvContent.ToString(), Encoding.UTF8);
-            Console.WriteLine("Конвертация JSON в CSV завершена");
         }
 
-        private static void ConvertProcessToCsv(Process process, StringBuilder csvContent)
+        public static void ConvertProcessToCsv(Process process, StringBuilder csvContent)
         {
             var properties = typeof(Process).GetProperties().Where(p => p.Name != "Chields");
             var values = new List<string>();

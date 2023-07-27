@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.IO;
 
 namespace Convert_json_to_csv
 {
@@ -6,7 +7,7 @@ namespace Convert_json_to_csv
     {
         public const string PathData = @".\data";
         public const string JsonFilePath = @".\data\db.json";
-        public const string CsvFilePath = @".\data\pm.content.ver36.csv";
+        public const string CsvFilePath = @".\data\pm.content.ver37-main.csv";
 
         static void Main()
         {
@@ -26,29 +27,7 @@ namespace Convert_json_to_csv
                     {
                         Console.WriteLine("Путь верный");
 
-                        var json = FileSystemHelper.ReadAllText(JsonFilePath);
-
-                        if (JsonToCsvConverter.IsValidJson(json))
-                        {
-                            var model = JsonSerializer.Deserialize<ModelJson>(json);
-
-                            if (model != null)
-                            {
-                                Console.WriteLine("JSON-файл успешно десериализован.");
-
-                                JsonToCsvConverter.UpdateChildParents(model.Processes, null);
-
-                                JsonToCsvConverter.ConvertToCsv(model.Processes, CsvFilePath);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Не удалось десериализовать JSON-файл.");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("JSON-файл имеет некорректный формат.");
-                        }
+                        JsonToCsvConverter.ConvertJsonToCsv(JsonFilePath, CsvFilePath);
                     }
                 }
                 else
@@ -59,14 +38,6 @@ namespace Convert_json_to_csv
             catch (FileNotFoundException ex)
             {
                 Console.WriteLine($"Файл не найден: {ex.Message}");
-            }
-            catch (JsonException ex)
-            {
-                Console.WriteLine($"Ошибка десериализации JSON: {ex.Message}");
-            }
-            catch (IOException ex)
-            {
-                Console.WriteLine($"Ошибка ввода/вывода: {ex.Message}");
             }
             catch (Exception ex)
             {
