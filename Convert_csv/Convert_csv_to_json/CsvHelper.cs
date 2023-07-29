@@ -27,18 +27,17 @@ namespace Convert_csv_to_json
             }
         }
 
-
         public static List<Process> ReadProcessFromCsv(string csv)
         {
             List<Process> processes = new();
-            Dictionary<string, Process> processMap = new();
+            List<Process> rootProcesses = new();
 
             using (var reader = new StringReader(csv))
             {
-
                 reader.ReadLine();
 
                 int lineNumber = 2;
+
                 while (reader.Peek() >= 0)
                 {
                     var line = reader.ReadLine();
@@ -51,93 +50,74 @@ namespace Convert_csv_to_json
                         continue;
                     }
 
-                    Process process = new()
-                    {
-                        UID = values[0],
-                        Chields = new List<Process>()
-                    };
-
-                    if(values[1] == "") process.UpUID = values[1] = "null";
-                    else
-                    {    
-                        if (values.Length >= 2 && values[1] != null)
-                            process.UpUID = values[1];
-                    }
-
-                    if(values[2] == ""){}
-                    else
-                    {
-                        if (values.Length >= 3 && values[2] != null)
-                            process.Title = values[2];
-                    }
-
-                    if(values[3] == ""){}
-                    else
-                    {
-                        if (values.Length >= 4 && values[3] != null)
-                            process.EmpParentProcess = values[3];
-                    }
-                    
-                    if(values[4] == ""){}
-                    else
-                    {
-                        if (values.Length >= 5 && values[4] != null)
-                            process.EmpDevBy = values[4];
-                    }
-
-                    if(values[5] == ""){}
-                    else
-                    {
-                        if (values.Length >= 6 && values[5] != null)
-                            process.GeneralInfoName = values[5];
-                    }
-
-                    if(values[6] == ""){}
-                    else
-                    {
-                        if (values.Length >= 7 && values[6] != null)
-                            process.DistributionArea = values[6];
-                    }
-
-                    if(values[7] == ""){}
-                    else
-                    {
-                        if (values.Length >= 8 && values[7] != null)
-                            process.JustificationOrder = values[7];
-                    }
-
-                    if(values[8] == ""){}
-                    else
-                    {
-                        if (values.Length >= 9 && values[8] != null)
-                            process.LinkProcessMap = values[8];
-                    }
-
-                    if(values[9] == ""){}
-                    else
-                    {
-                        if (values.Length >= 10 && values[9] != null)
-                            process.Link = values[9];
-                    }
-                    
+                    Process process = CreateProcessFromCsv(values);
                     processes.Add(process);
 
-                    processMap[process.UID] = process;
+                    if (string.IsNullOrEmpty(process.UpUID))
+                    {
+                        rootProcesses.Add(process);
+                    }
 
                     lineNumber++;
                 }
 
-                foreach (var process in processes)
+                foreach (var rootProcess in rootProcesses)
                 {
-                    if (!string.IsNullOrEmpty(process.UpUID) && processMap.ContainsKey(process.UpUID))
-                    {
-                        var parentProcess = processMap[process.UpUID];
-                        parentProcess.Chields.Add(process);
-                    }
+                    BuildProcessHierarchy(rootProcess, processes);
                 }
             }
-            
-            return processes;
+
+            return rootProcesses;
+        }
+
+        private static Process CreateProcessFromCsv(string[] values)
+        {
+            string uid = values[0];
+            string upUid = string.IsNullOrEmpty(values[1]) ? null : values[1];
+
+            Process process = new()
+            {
+                UID = uid,
+                UpUID = upUid,
+                Chields = new List<Process>()
+            };
+
+            for (int i = 2; i < values.Length; i++)
+            {
+                if (values[i] != "")
+                {
+                    SetProcessFieldValue(process, i, values[i]);
+                }
+            }
+
+            return process;
+        }
+
+        private static void SetProcessFieldValue(Process process, int index, string value)
+        {
+            switch (index)
+            {
+                case 2: process.Title = value; break;
+                case 3: process.EmpParentProcess = value; break;
+                case 4: process.EmpDevBy = value; break;
+                case 5: process.GeneralInfoName = value; break;
+                case 6: process.DistributionArea = value; break;
+                case 7: process.JustificationOrder = value; break;
+                case 8: process.LinkProcessMap = value; break;
+                case 9: process.Link = value; break;
+            }
+        }
+
+        private static void BuildProcessHierarchy(Process parentProcess, List<Process> allProcesses)
+        {
+            foreach (var process in allProcesses)
+            {
+                if (process.UpUID == parentProcess.UID)
+                {
+                    parentProcess.Chields.Add(process);
+                    BuildProcessHierarchy(process, allProcesses);
+                }
+            }
         }
 
         public static List<Employee> ReadEmployeesFromCsv(string csv)

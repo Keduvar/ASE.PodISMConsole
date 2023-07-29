@@ -23,7 +23,7 @@ namespace Convert_csv_to_json
 
         public static string SerializeToJson(object obj)
         {
-            JsonSerializerOptions jsonOptions = new JsonSerializerOptions
+            JsonSerializerOptions jsonOptions = new()
             {
                 WriteIndented = true,
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
