@@ -13,11 +13,11 @@ namespace Convert_json_to_csv
         [JsonPropertyName("Title")]
         public string Title { get; set; }
 
-        [JsonPropertyName("EmpParentProcess")]
-        public string OwnerGroupProcess { get; set; }
+        [JsonPropertyName("EmployeeParentProcess")]
+        public string EmployeeParentProcess { get; set; }
 
-        [JsonPropertyName("EmpDevBy")]
-        public string Methodologist { get; set; }
+        [JsonPropertyName("EmployeeDevBy")]
+        public string EmployeeDevBy { get; set; }
 
         [JsonPropertyName("GeneralInfoName")]
         public string GeneralInfoName { get; set; }

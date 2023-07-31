@@ -98,8 +98,8 @@ namespace Convert_csv_to_json
             switch (index)
             {
                 case 2: process.Title = value; break;
-                case 3: process.EmpParentProcess = value; break;
-                case 4: process.EmpDevBy = value; break;
+                case 3: process.EmployeeParentProcess = value; break;
+                case 4: process.EmployeeDevBy = value; break;
                 case 5: process.GeneralInfoName = value; break;
                 case 6: process.DistributionArea = value; break;
                 case 7: process.JustificationOrder = value; break;
