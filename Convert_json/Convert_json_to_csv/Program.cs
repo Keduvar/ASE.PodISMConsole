@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 namespace Convert_json_to_csv
 {
@@ -27,7 +26,7 @@ namespace Convert_json_to_csv
                     {
                         Console.WriteLine("Путь верный");
 
-                        JsonToCsvConverter.ConvertJsonToCsv(JsonFilePath, CsvFilePath);
+                        JsonHelper.ConvertJsonToCsv(JsonFilePath, CsvFilePath);
                     }
                 }
                 else
