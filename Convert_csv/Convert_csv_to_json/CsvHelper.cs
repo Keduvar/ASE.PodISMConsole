@@ -27,7 +27,7 @@ namespace Convert_csv_to_json
             }
         }
 
-        public static List<Process> ReadProcessFromCsv(string csv)
+        public static List<Process> ReadProcessFromCsv(string csv, List<Employee> employees)
         {
             List<Process> processes = new();
             List<Process> rootProcesses = new();
@@ -50,7 +50,7 @@ namespace Convert_csv_to_json
                         continue;
                     }
 
-                    Process process = CreateProcessFromCsv(values);
+                    Process process = CreateProcessFromCsv(values, employees);
                     processes.Add(process);
 
                     if (string.IsNullOrEmpty(process.UpUID))
@@ -70,7 +70,19 @@ namespace Convert_csv_to_json
             return rootProcesses;
         }
 
-        private static Process CreateProcessFromCsv(string[] values)
+        private static void BuildProcessHierarchy(Process parentProcess, List<Process> allProcesses)
+        {
+            foreach (var process in allProcesses)
+            {
+                if (process.UpUID == parentProcess.UID)
+                {
+                    parentProcess.Chields.Add(process);
+                    BuildProcessHierarchy(process, allProcesses);
+                }
+            }
+        }
+
+        private static Process CreateProcessFromCsv(string[] values, List<Employee> employees)
         {
             string uid = values[0];
             string upUid = string.IsNullOrEmpty(values[1]) ? null : values[1];
@@ -86,37 +98,57 @@ namespace Convert_csv_to_json
             {
                 if (values[i] != "")
                 {
-                    SetProcessFieldValue(process, i, values[i]);
+                    SetProcessFieldValue(process, i, values[i], employees);
                 }
             }
 
             return process;
         }
 
-        private static void SetProcessFieldValue(Process process, int index, string value)
+        private static void SetProcessFieldValue(Process process, int index, string value, List<Employee> employees)
         {
             switch (index)
             {
                 case 2: process.Title = value; break;
-                case 3: process.EmployeeParentProcess = value; break;
-                case 4: process.EmployeeDevBy = value; break;
-                case 5: process.GeneralInfoName = value; break;
-                case 6: process.DistributionArea = value; break;
-                case 7: process.JustificationOrder = value; break;
-                case 8: process.LinkProcessMap = value; break;
-                case 9: process.Link = value; break;
-            }
-        }
+                case 3: process.EmpParentProcess = value; break;
+                case 4:
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        string[] empParentIds = value.Split(',');
+                        process.EmployeeParentProcess = new List<Employee>();
 
-        private static void BuildProcessHierarchy(Process parentProcess, List<Process> allProcesses)
-        {
-            foreach (var process in allProcesses)
-            {
-                if (process.UpUID == parentProcess.UID)
-                {
-                    parentProcess.Chields.Add(process);
-                    BuildProcessHierarchy(process, allProcesses);
-                }
+                        foreach (var empParentId in empParentIds)
+                        {
+                            Employee employee = employees.Find(emp => emp.Id == empParentId.Trim());
+                            if (employee != null)
+                            {
+                                process.EmployeeParentProcess.Add(employee);
+                            }
+                        }
+                    }
+                    break;
+                case 5: process.EmpDevBy = value; break;
+                case 6:
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        string[] empDevIds = value.Split(',');
+                        process.EmployeeDevBy = new List<Employee>();
+
+                        foreach (var empDevId in empDevIds)
+                        {
+                            Employee employee = employees.Find(emp => emp.Id == empDevId.Trim());
+                            if (employee != null)
+                            {
+                                process.EmployeeDevBy.Add(employee);
+                            }
+                        }
+                    }
+                    break;
+                case 7: process.GeneralInfoName = value; break;
+                case 8: process.DistributionArea = value; break;
+                case 9: process.JustificationOrder = value; break;
+                case 10: process.LinkProcessMap = value; break;
+                case 11: process.Link = value; break;
             }
         }
 

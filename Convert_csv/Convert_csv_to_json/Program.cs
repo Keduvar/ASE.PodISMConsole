@@ -7,8 +7,8 @@ namespace Convert_csv_to_json
     {
         public const string PathData = @".\data";
         public const string JsonFilePath = @".\data\db.json";
-        public const string CsvFilePathProcess = @".\data\pm.content.ver37-main.csv";
-        public const string CsvFilePathEmployee = @".\data\pm.content.ver37-employee.csv";
+        public const string CsvFilePathProcess = @".\data\pm.content.ver40-main.csv";
+        public const string CsvFilePathEmployee = @".\data\pm.content.ver40-employee.csv";
 
         static void Main()
         {
@@ -33,12 +33,12 @@ namespace Convert_csv_to_json
 
                         if (CsvHelper.IsValidCsv(csvProcess) && CsvHelper.IsValidCsv(csvEmployee))
                         {
-                            var processes = CsvHelper.ReadProcessFromCsv(csvProcess);
                             var employee = CsvHelper.ReadEmployeesFromCsv(csvEmployee);
+                            var processes = CsvHelper.ReadProcessFromCsv(csvProcess , employee);
 
                             if (processes != null && employee != null)
                             {
-                                var jsonObject = new { processes, employee };
+                                var jsonObject = new { processes};
                                 var jsonProcess = JsonHelper.SerializeToJson(jsonObject);
 
                                 if (JsonHelper.IsValidJson(jsonProcess))
