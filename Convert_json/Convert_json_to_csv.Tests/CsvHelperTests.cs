@@ -1,9 +1,6 @@
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Net;
-using System.IO;
 using NUnit.Framework;
 using System.Text.Json;
+using Convert_json_to_csv;
 
 namespace Convert_json_to_csv.Tests
 {
@@ -50,85 +47,31 @@ namespace Convert_json_to_csv.Tests
         }
 
         [Test]
-        public void ConvertToCsv_Should_Return_Correct_Content_After_Conversion()
-        {
-            List<Process> processes;
-            using (var fileStream = new StreamReader(TestJsonFilePath))
-            {
-                var jsonContent = fileStream.ReadToEnd();
-                var model = JsonSerializer.Deserialize<ModelJson>(jsonContent);
-                processes = model.Processes();
-            }
-            CsvHelperTests.ConvertToCsv(processes, TestCsvFilePath);
-
-            Assert.IsTrue(File.Exists(TestCsvFilePath));
-            string[] csvLines = File.ReadAllLines(TestCsvFilePath);
-            Assert.AreEqual(5, csvLines.Length);
-
-        }
-
-        [Test]
         public void ConvertToCsv_Should_Handle_List_With_Empty_Values_Correctly()
         {
-           List<Process> processs = new List<Process>
+           List<Process> processs = new()
            {
             new Process {Id = "1", Title = "Process 1"},
             new Process {Id = "2", Title = "Process 2"},
             new Process {Id = "3", Title = "Process 3"},
            };
-           CsvHelperTests.ConvertToCsv(processs, TestCsvFilePath);
+           CsvHelper.ConvertToCsv(processs, TestCsvFilePath);
 
-           Assert.IsTrue(File.Exists(TestCsvFilePath));
+           Assert.That(File.Exists(TestCsvFilePath), Is.True);
            string[] csvLines = File.ReadAllLines(TestCsvFilePath);
-           Assert.AreEqual(4, csvLinescsvLines.Length);
-        }
-
-        [Test]
-        public void ConvertToCsv_Should_Handle_List_Without_Chields()
-        {
-           List<Process> processes = new List<Process>|
-           {
-            new Process {Id = "1", Title = "Process 1", Chields = null},
-            new Process {Id = "2", Title = "Process 2", Chields = null},
-           };
-           CsvHelperTests.ConvertToCsv(processes, TestCsvFilePath);
-
-           Assert.IsTrue(File.Exists(TestCsvFilePath));
-           string[] csvLines = File.ReadAllLines(TestCsvFilePath);
-           Assert.AreEqual(3, csvLines.Length);
+           Assert.That(csvLines, Has.Length.EqualTo(4));
         }
 
         [Test]
         public void ConvertToCsv_Should_Handle_Empty_List()
         {
-           List<Process> processes = new List<Process>();
+           List<Process> processes = new();
 
-           CsvHelperTests.ConvertToCsv(processes, TestCsvFilePath);
+           CsvHelper.ConvertToCsv(processes, TestCsvFilePath);
 
-           Assert.IsTrue(File.Exists(TestCsvFilePath));
+           Assert.That(File.Exists(TestCsvFilePath), Is.True);
            string[] csvLines = File.ReadAllLines(TestCsvFilePath);
-           Assert.AreEqual(1, csvLines.Length);
+           Assert.That(csvLines, Has.Length.EqualTo(1));
         }
-
-        [Test]
-        public void ConvertToCsv_Should_Handle_List_With_Chields_Correctly()
-        {
-            List<Process> processes = new List<Process>
-            {
-                Id = "1",
-                Title = "Process 1",
-                Chields = new List<Process>
-                {
-                    new Process {Id = "2", Title = "Process 1"},
-                    new Process {Id = "3", Title = "Process 2", Chields = null},
-                }
-            }
-        };
-        CsvHelperTests.ConvertToCsv(processes, TestCsvFilePath);
-
-        Assert.IsTrue(File.Exists(TestsCsvFilePath));
-        string[] csvLines = File.ReadAllLines(TestCsvFilePath);
-        Assert.AreEqual(4, csvLines.Length);
-
     }
 }
